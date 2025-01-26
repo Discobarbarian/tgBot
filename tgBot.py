@@ -1,9 +1,10 @@
 import json
 import requests
 import telebot
-from telebot import types
-from config import TOKEN
-from copy import deepcopy
+
+import os
+TOKEN = os.environ.get("BOT_TOKEN")
+print("BOT_TOKEN", TOKEN)
 
 bot = telebot.TeleBot(TOKEN)
 
