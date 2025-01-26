@@ -22,12 +22,25 @@ def welcome(message):
     bot.register_next_step_handler(message, save_url)
 
 def save_url(message):
-    url = message.text
-    user_data[message.chat.id]['link'] = url
-    bot.send_message(message.chat.id,
-                     'Good, now specify input language')
-    bot.register_next_step_handler(message, save_lang)
+    # url = message.text
+    # user_data[message.chat.id]['link'] = url
+    # bot.send_message(message.chat.id,
+    #                  'Good, now specify input language')
+    # bot.register_next_step_handler(message, save_lang)
+    payload = json.dumps({"link": message.text, "chat_id": message.chat.id})
 
+    request = requests.post(url, data=payload, headers=headers)
+
+    if request.status_code == 200:
+        print("Success!", request.json())
+    else:
+        print(f"Failed with status code {response.status_code}: {response.text}")
+
+    response = request.json()
+    if response['translation_status'] == 'translation_processing':
+        bot.send_message(message.chat.id, 'translation in progress, link will arrive soon') 
+
+#TODO: Use when ready api
 def save_lang(message):
     lang = message.text
     user_data[message.chat.id]['lang'] = lang
