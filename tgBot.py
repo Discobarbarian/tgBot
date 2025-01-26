@@ -10,7 +10,8 @@ bot = telebot.TeleBot(TOKEN)
 user_data = {}
 requestBody = {}
 response = {}
-header = {'Content-Type' : 'application/json'}
+headers = {'Content-Type' : 'application/json'}
+url = "http://85.209.9.165:8080/api/initialize_translation"
 
 @bot.message_handler(commands= ['start'])
 def welcome(message):
@@ -36,27 +37,22 @@ def save_lang(message):
 def save_reslang(message):
     reslang = message.text
     user_data[message.chat.id]['reslang'] = reslang
-    #print(user_data)
-    #print(user_data[message.chat.id])
-    requestBody = deepcopy(user_data[message.chat.id])
-    requestBody['chat_id'] = message.chat.id
-    payload = json.dumps(requestBody)
-    print(payload)
 
-    request = requests.post('http://85.209.9.165:8080/api/initialize_translation', headers= header, json= payload)
-    print(request)
-    print(request.text)
-    print(user_data)
-    print(request.headers)
+    payload = user_data[message.chat.id]
+    payload.update({"chat_id": message.chat.id})
+    payload = json.dumps(payload)
 
-    response = json.loads(request.text)
+    request = requests.post(url, data=payload, headers=headers)
+
+    if request.status_code == 200:
+        print("Success!", request.json())
+    else:
+        print(f"Failed with status code {response.status_code}: {response.text}")
+
+    response = request.json()
     if response['translation_status'] == 'translation_processing':
         bot.send_message(message.chat.id, 'translation in progress, link will arrive soon') 
     
-    
-
-
-
 if __name__ == '__main__':
     print('Бот запущен!')
     bot.polling(none_stop=True, interval=0)
