@@ -4,6 +4,7 @@ import telebot
 
 import os
 TOKEN = os.environ.get("BOT_TOKEN")
+API_HOST = os.environ.get("API_HOST")
 print("BOT_TOKEN", TOKEN)
 
 bot = telebot.TeleBot(TOKEN)
@@ -12,7 +13,7 @@ user_data = {}
 requestBody = {}
 response = {}
 headers = {'Content-Type' : 'application/json'}
-url = "http://85.209.9.165:8080/api/initialize_translation"
+url = API_HOST + "/api/initialize_translation"
 
 @bot.message_handler(commands= ['start'])
 def welcome(message):
